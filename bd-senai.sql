@@ -4,19 +4,19 @@ use bd_senai;
 show databases;
 
 create table aluno (
-	id_aluno int not null primary key auto_increment,
+    id_aluno int not null primary key auto_increment,
     nome varchar(60) not null,
     sobrenome varchar(60) not null
 )default charset utf8;
 
 create table professor (
-	id_professor int not null primary key auto_increment,
+    id_professor int not null primary key auto_increment,
     nome varchar(60) not null, 
     sobrenome varchar(60) not null
 )default charset utf8;
 
 create table turma(
-	id_turma int not null auto_increment primary key,
+    id_turma int not null auto_increment primary key,
     id_aluno int,
     foreign key (id_aluno) references aluno(id_aluno),
     id_professor int,
