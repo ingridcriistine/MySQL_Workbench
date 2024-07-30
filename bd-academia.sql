@@ -35,4 +35,12 @@ create table sala(
     Capacidade int
 ) default charset utf8;
 
+create table participar (
+	IDParticipar int not null auto_increment primary key,
+    IDAluno int,
+    foreign key (IDAluno) references aluno(IDAluno),
+    IDAula int,
+    foreign key (IDAula) references aula(IDAula)
+) default charset utf8;
+
 show tables;
