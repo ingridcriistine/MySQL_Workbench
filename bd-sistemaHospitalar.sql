@@ -43,6 +43,8 @@ create table consultaPaciente (
 
 create table receita (
 	IDReceita int not null auto_increment primary key,
+    IDConsulta int,
+    foreign key (IDConsulta) references consulta(IDConsulta),
     IDExame int,
     foreign key (IDExame) references exame(IDExame),
     IDMedicamento int,
