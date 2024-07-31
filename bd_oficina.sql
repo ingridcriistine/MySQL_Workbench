@@ -43,7 +43,16 @@ create table servico (
 ) default charset utf8;
 
 create table ordem_servico (
-	
+	IDOrdem_Servico int not null primary key auto_increment,
+    Data_Entrada datetime not null,
+    Data_Conclusao datetime not null,
+    Status varchar(60) not null,
+    Preco float not null,
+    Observacoes varchar(100),
+    IDCliente int not null,
+    foreign key (IDCliente) references cliente(IDCliente),
+    IDVeiculo int not null,
+    foreign key (IDVeiculo) references veiculo(IDVeiculo)
 ) default charset utf8;
 
 create table ordem_servico_servico (
@@ -51,5 +60,7 @@ create table ordem_servico_servico (
 	IDServico int not null,
     foreign key (IDServico) references servico(IDServico),
     IDOrdem_Servico int not null,
-    foreign key (IDOrdem_Servico) references ordem_servico_servico(IDOrdem_Servico)
+    foreign key (IDOrdem_Servico) references ordem_servico(IDOrdem_Servico)
 ) default charset utf8;
+
+show tables;
