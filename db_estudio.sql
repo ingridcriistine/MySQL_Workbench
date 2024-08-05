@@ -118,7 +118,7 @@ SELECT
 -- Quais são os atores estrangeiros no banco de dados e quantos são?
 SELECT 
     Nacionalidade as 'Nacionalidade',
-    COUNT(Nome) as 'Qtd de estrangeiros'
+    COUNT(*) as 'Qtd de estrangeiros'
     
     from tb_atores 
     where Nacionalidade != 'Americana'
