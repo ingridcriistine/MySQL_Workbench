@@ -177,7 +177,7 @@ SELECT
     AnoLancamento as 'Ano de Lançamento'
     
     from tb_filmes
-    where AnoLancamento > 2017;
+    where AnoLancamento >= YEAR(current_date()) - 5;
 
 
 -- Qual é o estúdio com a data de fundação mais recente?
