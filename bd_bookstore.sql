@@ -22,6 +22,7 @@ CREATE TABLE clientes (
 	nome VARCHAR(100), 
 	email VARCHAR(100) 
 ); 
+
 -- Tabela 'pedidos' 
 CREATE TABLE pedidos (
 	pedido_id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -233,17 +234,17 @@ SELECT
     
 -- Listar todos os pedidos, incluindo os livros que não foram pedidos, e o cliente associado, se houver.
 SELECT
-p.pedido_id as 'Nº Pedido',
-l.titulo as 'Livro',
-c.nome as 'Cliente'
+	p.pedido_id as 'Nº Pedido',
+	l.titulo as 'Livro',
+	c.nome as 'Cliente'
 
-from pedidos p 
+	from pedidos p 
 
-inner join clientes c 
-on p.cliente_id = c.cliente_id
+	inner join clientes c 
+	on p.cliente_id = c.cliente_id
 
-inner join livros l 
-on p.livro_id = l.livro_id;
+	inner join livros l 
+	on p.livro_id = l.livro_id;
 	
 
 -- Listar todos os autores que têm livros com preços definidos e quantidades vendidas maiores que 1.
@@ -298,23 +299,23 @@ SELECT
 
 -- Listar todos os pedidos feitos por clientes com nomes que começam com a letra "A", incluindo os detalhes do livro.
 SELECT
-p.pedido_id as 'Nº Pedido',
-c.nome as 'Cliente',
-l.titulo as 'Livro',
-a.nome as 'Autor'
+	p.pedido_id as 'Nº Pedido',
+	c.nome as 'Cliente',
+	l.titulo as 'Livro',
+	a.nome as 'Autor'
 
-from pedidos p
+	from pedidos p
 
-inner join clientes c
-on p.cliente_id = c.cliente_id
+	inner join clientes c
+	on p.cliente_id = c.cliente_id
 
-inner join livros l
-on p.livro_id = l.livro_id
+	inner join livros l
+	on p.livro_id = l.livro_id
 
-left join autores a
-on l.autor_id = a.autor_id
+	left join autores a
+	on l.autor_id = a.autor_id
 
-where c.nome = 'A%';
+	where c.nome like 'A%';
 	
 
 -- Listar todos os livros que não foram pedidos até o momento.
@@ -350,13 +351,13 @@ SELECT
 
 -- Listar todos os autores que têm livros com preços definidos, e os livros que não têm preço definido.
 SELECT
-a.nome as 'Autor',
-l.titulo as 'Livro',
-l.preco as 'Preço'
+	a.nome as 'Autor',
+	l.titulo as 'Livro',
+	l.preco as 'Preço'
 
-from livros l
-inner join autores a
-on l.autor_id = a.autor_id
+	from livros l
+	inner join autores a
+	on l.autor_id = a.autor_id;
 
 
 -- Listar todos os pedidos com seus respectivos clientes e livros, incluindo os pedidos sem cliente associado.
@@ -377,36 +378,40 @@ SELECT
     on p.cliente_id = c.cliente_id
     
     inner join autores a
-    on a.autor_id = l.autor_id
+    on a.autor_id = l.autor_id;
     
 
 
 -- Listar todos os clientes e os livros que eles pediram, incluindo os clientes que não fizeram nenhum pedido.
 SELECT
-c.nome as 'Cliente',
-l.titulo as 'Livro'
+	c.nome as 'Cliente',
+	l.titulo as 'Livro'
 
-from pedidos p
-inner join clientes c 
-on c.cliente_id = p.cliente_id;
+	from pedidos p
+    
+	inner join clientes c 
+	on c.cliente_id = p.cliente_id
+    
+    inner join livros l
+    on p.livro_id = l.livro_id;
 
 
 -- Listar todos os autores que têm livros associados a pedidos feitos por clientes com nomes que terminam com a letra "a".
 SELECT
-a.nome as 'Autor',
-l.titulo as 'Livro',
-p.pedido_id as 'Nº Pedido',
-c.nome as 'Cliente'
+	a.nome as 'Autor',
+	l.titulo as 'Livro',
+	p.pedido_id as 'Nº Pedido',
+	c.nome as 'Cliente'
 
-from pedidos p
+	from pedidos p
 
-inner join clientes c
-on c.cliente_id = p.cliente_id
+	inner join clientes c
+	on c.cliente_id = p.cliente_id
 
-inner join livros l
-on l.livro._id = p.livro_id
+	inner join livros l
+	on l.livro_id = p.livro_id
 
-left join autores a
-on l.autor_id = a.autor_id
+	left join autores a
+	on l.autor_id = a.autor_id
 
-where c.nome = '%a';
+	where c.nome like "%a";
