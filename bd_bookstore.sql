@@ -233,7 +233,18 @@ SELECT
     
 -- Listar todos os pedidos, incluindo os livros que não foram pedidos, e o cliente associado, se houver.
 SELECT
+p.pedido_id as 'Nº Pedido',
+l.titulo as 'Livro',
+c.nome as 'Cliente'
 
+from pedidos p 
+
+inner join clientes c 
+on p.cliente_id = c.cliente_id
+
+inner join livros l 
+on p.livro_id = l.livro_id;
+	
 
 -- Listar todos os autores que têm livros com preços definidos e quantidades vendidas maiores que 1.
 SELECT
@@ -338,7 +349,14 @@ SELECT
 	
 
 -- Listar todos os autores que têm livros com preços definidos, e os livros que não têm preço definido.
+SELECT
+a.nome as 'Autor',
+l.titulo as 'Livro',
+l.preco as 'Preço'
 
+from livros l
+inner join autores a
+on l.autor_id = a.autor_id
 
 
 -- Listar todos os pedidos com seus respectivos clientes e livros, incluindo os pedidos sem cliente associado.
