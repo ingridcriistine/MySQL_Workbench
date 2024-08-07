@@ -232,7 +232,7 @@ SELECT
     
     
 -- Listar todos os pedidos, incluindo os livros que não foram pedidos, e o cliente associado, se houver.
-
+SELECT
 
 
 -- Listar todos os autores que têm livros com preços definidos e quantidades vendidas maiores que 1.
@@ -287,10 +287,24 @@ SELECT
 
 -- Listar todos os pedidos feitos por clientes com nomes que começam com a letra "A", incluindo os detalhes do livro.
 SELECT
+p.pedido_id as 'Nº Pedido',
+c.nome as 'Cliente',
+l.titulo as 'Livro',
+a.nome as 'Autor'
 
-;
+from pedidos p
+
+inner join clientes c
+on p.cliente_id = c.cliente_id
+
+inner join livros l
+on p.livro_id = l.livro_id
+
+left join autores a
+on l.autor_id = a.autor_id
+
+where c.nome = 'A%';
 	
-
 
 -- Listar todos os livros que não foram pedidos até o momento.
 SELECT
@@ -350,5 +364,31 @@ SELECT
 
 
 -- Listar todos os clientes e os livros que eles pediram, incluindo os clientes que não fizeram nenhum pedido.
+SELECT
+c.nome as 'Cliente',
+l.titulo as 'Livro'
+
+from pedidos p
+inner join clientes c 
+on c.cliente_id = p.cliente_id;
+
 
 -- Listar todos os autores que têm livros associados a pedidos feitos por clientes com nomes que terminam com a letra "a".
+SELECT
+a.nome as 'Autor',
+l.titulo as 'Livro',
+p.pedido_id as 'Nº Pedido',
+c.nome as 'Cliente'
+
+from pedidos p
+
+inner join clientes c
+on c.cliente_id = p.cliente_id
+
+inner join livros l
+on l.livro._id = p.livro_id
+
+left join autores a
+on l.autor_id = a.autor_id
+
+where c.nome = '%a';
