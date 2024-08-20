@@ -260,6 +260,7 @@ create table logPontosAtualizados (
 );
 
 call atualizar_pontos(4);
+select * from logPontosAtualizados;
 select * from proprietarios;
 
 
@@ -276,14 +277,6 @@ begin
 end
 // DELIMITER ;
 
-drop procedure deletar_proprietario;
-
-call deletar_proprietario(3);
-select * from veiculos;
-select * from infracoes;
-select * from multas;
-select * from proprietarios;
-
 create table logProprietarioDeletado (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255),
@@ -291,10 +284,6 @@ create table logProprietarioDeletado (
     telefone VARCHAR(20),
     pontos_cartreira INT
 );
-
-drop table logProprietarioDeletado;
-
-select * from logProprietarioDeletado;
 
 DELIMITER //
 create trigger tg_logProprietarioDeletado
@@ -305,7 +294,13 @@ begin
 end
 // DELIMITER ;
 
-drop trigger tg_logProprietarioDeletado;
+call deletar_proprietario(3);
+select * from veiculos;
+select * from infracoes;
+select * from multas;
+select * from proprietarios;
+select * from logProprietarioDeletado;
+
 
 -- Selecionar veículos com licenciamento expirado ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
