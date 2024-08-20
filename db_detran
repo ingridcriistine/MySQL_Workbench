@@ -114,10 +114,11 @@ INSERT INTO Multas (valor, pontos, data_aplicacao, infracao_id) VALUES
 
 
 
-
 show procedure status where db = 'db_detran';
 
--- Inserir um novo veículo e seu proprietário (com trigger)
+
+
+-- Inserir um novo veículo e seu proprietário (com trigger) ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure inserir_veiculo(marca VARCHAR(255), modelo VARCHAR(255), placa VARCHAR(7), ano INT, proprietario_id int)
 begin
@@ -153,7 +154,7 @@ end
 drop trigger tg_logNovoVeiculo;
 
 
--- Deletar um veículo e suas multas associadas (com trigger)
+-- Deletar um veículo e suas multas associadas (com trigger) ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetDeletarVeiculo(p_idade int)
 begin
@@ -162,16 +163,13 @@ end
 // DELIMITER ;
 
 
--- Inserir uma nova infração e atualizar multas associadas (com trigger)
+-- Inserir uma nova infração e atualizar multas associadas (com trigger) ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure inserir_infracao(descricao VARCHAR(255), gravidade ENUM('Leve', 'Média', 'Grave', 'Gravíssima'), data_ocorrencia DATE, veiculo_id INT)
 begin
 	insert into infracoes values(default, descricao, gravidade, data_ocorrencia, veiculo_id);
 end
 // DELIMITER ;
-
-call inserir_infracao();
-select * from infracoes;
 
 create table logNovaInfracao (
 	id int primary key not null auto_increment,
@@ -188,19 +186,27 @@ create trigger tg_logNovaInfracao
 after insert on infracoes
 for each row
 begin
-	insert into logNovaInfracao();
+	insert into logNovaInfracao(descricao, gravidade, data_ocorrencia, veiculo_id) values 
+    (new.descricao, new.gravidade, new.data_ocorrencia, new.veiculo_id);
 end
 // DELIMITER ;
 
 drop trigger tg_logNovaInfracao;
 
-
--- Atualizar pontos na carteira de um proprietário específico que levou uma multa(com trigger)
--- Deletar um proprietário e seus veículos associados (com trigger)
-
+call inserir_infracao('Estacionar veículo em acostamento', 'Leve', curdate(), 2);
+select * from infracoes;
 
 
--- Selecionar veículos com licenciamento expirado
+-- Atualizar pontos na carteira de um proprietário específico que levou uma multa(com trigger) ------------------------------------------------------------------------------------------------------------------
+
+
+
+
+-- Deletar um proprietário e seus veículos associados (com trigger) ------------------------------------------------------------------------------------------------------------------
+
+
+
+-- Selecionar veículos com licenciamento expirado ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetVeiculosLicenciamentoExpirado(p_ano date)
 begin
@@ -221,7 +227,7 @@ drop procedure  GetVeiculosLicenciamentoExpirado;
 call GetVeiculosLicenciamentoExpirado('2023-01-01');
 
 
--- Selecionar veículos que possuem multas graves
+-- Selecionar veículos que possuem multas graves ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetVeiculosMultas(p_gravidade enum('Leve','Média','Grave','Gravíssima'))
 begin
@@ -242,7 +248,7 @@ end
 call GetVeiculosMultas('Grave');
 
 
--- Selecionar veículos acima de 2021 
+-- Selecionar veículos acima de 2021 ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetVeiculosAno(p_ano int)
 begin
@@ -261,7 +267,7 @@ drop procedure  GetVeiculosAno;
 call GetVeiculosAno(2021);
 
 
--- Selecionar multas de veículos abaixo de 2020
+-- Selecionar multas de veículos abaixo de 2020 ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetMultasVeiculosAno(p_ano int)
 begin
@@ -283,12 +289,42 @@ drop procedure  GetVeiculosAno;
 call GetVeiculosAno(2021);
 
 
--- Inserir um novo proprietário
--- Atualizar informações de um proprietário
--- Deletar um proprietário
+-- Inserir um novo proprietário ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure inserir_proprietario(nome VARCHAR(255), cpf VARCHAR(11), endereco VARCHAR(255), telefone VARCHAR(20))
+begin
+	insert into proprietarios values(default, nome, cpf, endereco, telefone, default);
+end
+// DELIMITER ;
+
+drop procedure inserir_proprietario;
+
+call inserir_proprietario('Ingrid Rocha', '1234678', 'Rua F, 1000', '(41) 9999-9999');
+select * from proprietarios;
 
 
--- Selecionar todos os proprietários
+-- Atualizar informações de um proprietário ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure atualizar_proprietario(p_id int, nome VARCHAR(255), cpf VARCHAR(11), endereco VARCHAR(255), telefone VARCHAR(20))
+begin
+	update proprietarios
+    set nome = nome,
+    cpf = cpf,
+    endereco = endereco,
+    telefone = telefone
+    where id = p_id;
+end
+// DELIMITER ;
+
+call inserir_proprietario('aaaaaa', '1235203', 'Rua G, 1880', '(41) 9999-9999');
+call inserir_proprietario('Ingrid Rocha', '1234678', 'Rua F, 1000', '(41) 9999-9999');
+select * from proprietarios;
+
+
+-- Deletar um proprietário ------------------------------------------------------------------------------------------------------------------
+
+
+-- Selecionar todos os proprietários ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetProprietarios()
 begin
@@ -299,12 +335,49 @@ end
 call GetProprietarios();
 
 
--- Inserir uma nova infração
--- Atualizar informações de uma infração
--- Deletar uma infração
+-- Inserir uma nova infração ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure inserir_infracao(descricao VARCHAR(255), gravidade ENUM('Leve', 'Média', 'Grave', 'Gravíssima'), data_ocorrencia DATE, veiculo_id INT)
+begin
+	insert into infracoes values(default, descricao, gravidade, data_ocorrencia, veiculo_id);
+end
+// DELIMITER ;
+
+call inserir_infracao('Estacionar veículo afastado entre 50 centímetros e 1 metro do meio fio', 'Leve', curdate(), 2);
+select * from infracoes;
 
 
--- Selecionar todas as infrações
+-- Atualizar informações de uma infração ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure atualizar_infracao(p_id int, descricao VARCHAR(255), gravidade ENUM('Leve', 'Média', 'Grave', 'Gravíssima'), data_ocorrencia DATE, veiculo_id INT)
+begin
+	update infracoes
+    set descricao = descricao,
+    gravidade = gravidade,
+    data_ocorrencia = data_ocorrencia,
+    veiculo_id = veiculo_id
+    where id = p_id;
+end
+// DELIMITER ;
+
+call inserir_infracao('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'Grave', curdate(), 5);
+call atualizar_infracao(14, 'Transitar pela contramão em vias com duplo sentido de circulação;', 'Grave', curdate(), 5);
+select * from infracoes;
+
+
+-- Deletar uma infração ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure deletar_infracao(p_id int)
+begin
+	delete from infracoes where id = p_id;
+end
+// DELIMITER ;
+
+call deletar_infracao(12);
+select * from infracoes;
+
+
+-- Selecionar todas as infrações ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
 create procedure GetInfracoes(p_proprietario int)
 begin
@@ -323,6 +396,36 @@ end
 call GetInfracoes(4);
 
 
--- Inserir um novo licenciamento,
--- Atualizar informações de um licenciamento
--- Selecionar todos os veículos com multas pendentes
+-- Inserir um novo licenciamento ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure inserir_licenciamento(data_validade DATE, veiculo_id INT)
+begin
+	insert into licenciamentos values(default, data_validade, veiculo_id);
+end
+// DELIMITER ;
+
+drop procedure inserir_licenciamento;
+call inserir_licenciamento('2028-10-10', 5);
+
+select * from licenciamentos;
+
+
+-- Atualizar informações de um licenciamento ------------------------------------------------------------------------------------------------------------------
+DELIMITER //
+create procedure atualizar_licenciamento(p_id int, data_validade DATE, veiculo_id INT)
+begin
+	update licenciamentos
+    set data_validade = data_validade,
+    veiculo_id = veiculo_id
+    where id = p_id;
+end
+// DELIMITER ;
+
+drop procedure atualizar_licenciamento;
+
+call inserir_licenciamento('1900-02-02', 5);
+call atualizar_licenciamento(12, '2009-02-02', 5);
+select * from licenciamentos;
+
+
+-- Selecionar todos os veículos com multas pendentes ------------------------------------------------------------------------------------------------------------------
