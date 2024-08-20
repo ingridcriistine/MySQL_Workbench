@@ -233,34 +233,34 @@ select * from infracoes;
 DELIMITER //
 create procedure atualizar_pontos(p_id int)
 begin
-	update 
+	update proprietarios
+    set pontos_cartreira = (
+    select sum(pontos) from multas where infracao_id in (
+    select id from infracoes where veiculo_id in (
+    select id from veiculos where proprietario_id = p_id
+    )))
+    
+    where id = p_id; 
 end
 // DELIMITER ;
-
-create table logNovaInfracao (
-	id int primary key not null auto_increment,
-    descricao varchar(255),
-    gravidade ENUM('Leve', 'Média', 'Grave', 'Gravíssima'),
-    data_ocorrencia DATE, 
-    veiculo_id INT
-);
-
-select * from logNovaInfracao;
 
 DELIMITER //
-create trigger tg_logNovaInfracao
-after insert on infracoes
+create trigger tg_logPontosAtualizados
+after update on proprietarios
 for each row
 begin
-	insert into logNovaInfracao(descricao, gravidade, data_ocorrencia, veiculo_id) values 
-    (new.descricao, new.gravidade, new.data_ocorrencia, new.veiculo_id);
+	insert into logPontosAtualizados(nome, pontos_cartreira) values (new.nome, new.pontos_cartreira);
 end
 // DELIMITER ;
 
-drop trigger tg_logNovaInfracao;
+create table logPontosAtualizados (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    pontos_cartreira INT
+);
 
-call inserir_infracao('Estacionar veículo em acostamento', 'Leve', curdate(), 2);
-select * from infracoes;
+call atualizar_pontos(4);
+select * from proprietarios;
 
 
 
@@ -271,7 +271,7 @@ begin
     delete from multas where infracao_id in (select id from infracoes where veiculo_id in (select id from veiculos where proprietario_id = p_id));
     delete from infracoes where veiculo_id in (select id from veiculos where proprietario_id = p_id);
     delete from licenciamentos where veiculo_id in (select id from veiculos where proprietario_id = p_id);
-    delete from veiculos where id in (select id from veiculos where proprietario_id = p_id);
+    delete from veiculos where proprietario_id = p_id;
     delete from proprietarios where id = p_id;
 end
 // DELIMITER ;
@@ -289,8 +289,10 @@ create table logProprietarioDeletado (
     nome VARCHAR(255),
     cpf VARCHAR(11),
     telefone VARCHAR(20),
-    pontos_cartreira INT DEFAULT 0
+    pontos_cartreira INT
 );
+
+drop table logProprietarioDeletado;
 
 select * from logProprietarioDeletado;
 
@@ -299,10 +301,11 @@ create trigger tg_logProprietarioDeletado
 after delete on proprietarios
 for each row
 begin
-	insert into logProprietarioDeletado(nome, cpf, telefone, pontos_cartreira) values (nome.old, cpf.old, telefone.old, pontos_cartreira.old);
+	insert into logProprietarioDeletado(nome, cpf, telefone, pontos_cartreira) values (old.nome, old.cpf, old.telefone, old.pontos_cartreira);
 end
 // DELIMITER ;
 
+drop trigger tg_logProprietarioDeletado;
 
 -- Selecionar veículos com licenciamento expirado ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
