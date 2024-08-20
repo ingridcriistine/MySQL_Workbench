@@ -156,11 +156,40 @@ drop trigger tg_logNovoVeiculo;
 
 -- Deletar um veículo e suas multas associadas (com trigger) ------------------------------------------------------------------------------------------------------------------
 DELIMITER //
-create procedure GetDeletarVeiculo(p_idade int)
+create procedure deletar_veiculo(p_id int)
 begin
-	
+    delete from multas where (select id from infracoes where veiculo_id = p_id) = p_id;
+    delete from infracoes where veiculo_id = p_id;
+    delete from veiculos where id = p_id;
 end
 // DELIMITER ;
+
+drop procedure deletar_veiculo;
+
+call deletar_veiculo(10);
+select * from veiculos;
+select * from infracoes;
+select * from multas;
+
+create table logVeiculoDeletado (
+	id int primary key not null auto_increment,
+    marca varchar(255),
+    modelo varchar(255),
+    placa varchar(7),
+    proprietario int
+);
+
+select * from logVeiculoDeletado;
+
+DELIMITER //
+create trigger tg_logVeiculoDeletado
+before delete on veiculos
+for each row
+begin
+	insert into logVeiculoDeletado(marca, modelo, placa, proprietario_id) values (new.marca, new.modelo, new.placa, proprietario_id);
+end
+// DELIMITER ;
+
 
 
 -- Inserir uma nova infração e atualizar multas associadas (com trigger) ------------------------------------------------------------------------------------------------------------------
@@ -317,11 +346,31 @@ end
 // DELIMITER ;
 
 call inserir_proprietario('aaaaaa', '1235203', 'Rua G, 1880', '(41) 9999-9999');
-call inserir_proprietario('Ingrid Rocha', '1234678', 'Rua F, 1000', '(41) 9999-9999');
+call atualizar_proprietario(7, 'Mari Marques', '1235203', 'Rua G, 1880', '(41) 9999-9999');
 select * from proprietarios;
 
 
 -- Deletar um proprietário ------------------------------------------------------------------------------------------------------------------
+set sql_safe_updates = 0;
+
+alter table proprietarios
+add column status_usuario enum('Ativo', 'Inativo');
+update proprietarios
+set status_usuario = 'Ativo';
+
+DELIMITER //
+create procedure deletar_proprietario(p_id int)
+begin
+	update proprietarios
+    set status_usuario = 2
+    where id = p_id;
+end
+// DELIMITER ;
+
+drop procedure deletar_proprietario;
+
+call deletar_proprietario(3);
+select * from proprietarios;
 
 
 -- Selecionar todos os proprietários ------------------------------------------------------------------------------------------------------------------
