@@ -192,7 +192,9 @@ end;
 call p_atualizarAno(7);
 select * from veiculos;
 
+
 -- Adicione um novo veículo com modelo = 'Passat', ano = 2021, preço = 95.000,00, cor = 'Azul', e id_marca = 3. Se o modelo já existir, execute um ROLLBACK. Caso contrário, execute um COMMIT.
+
 
 -- Atualize o telefone do cliente com id = 6 para '(11) 4444-5555'. Se o telefone atual for diferente de '(11) 4444-5555', execute um ROLLBACK. Caso contrário, execute um COMMIT.
 DELIMITER //
@@ -215,8 +217,55 @@ end;
 call p_atualizarTelefone(6);
 select * from clientes;
 
+
 -- Exclua o cliente com id = 3. Se o cliente estiver associado a alguma venda, execute um ROLLBACK. Caso contrário, execute um COMMIT.
 
+
 -- Atualize o modelo do veículo com id = 10 para 'Gol G6'. Se o modelo atual for 'Gol G6', execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_atualizarModelo(p_id int)
+begin
+START TRANSACTION;
+
+set @modeloAtual = (select modelo from veiculos where id = p_id);
+update veiculos set modelo = 'Gol G6' where id = p_id;
+
+if (@modeloAtual = 'Gol G6') then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+drop procedure p_atualizarModelo;
+
+call p_atualizarModelo(10);
+select * from veiculos;
+
 
 -- Adicione uma nova venda com id_veiculo = 2, id_cliente = 4, e data_venda = '2024-08-01'. Se o cliente já tiver uma venda com o mesmo veículo, execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_adicionarVenda(id_veiculo int, id_cliente int, data_venda date)
+begin
+START TRANSACTION;
+
+if (p_email in (select email from clientes)) then 
+	set @vendaDuplicada = true;
+end if;
+    
+insert into vendas (id_veiculo, id_cliente, data_venda) values (id_veiculo, id_cliente, data_venda);
+
+if (@vendaDuplicada = true) then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+call p_adicionarVenda(2, 4, '2024-08-01');
+select * from vendas;
+
