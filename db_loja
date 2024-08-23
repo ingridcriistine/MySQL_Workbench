@@ -122,16 +122,98 @@ select * from veiculos;
 
 
 -- Adicione um novo cliente com nome = 'Laura', email = 'laura@example.com', e telefone = '(11) 2222-3333'. Se o e-mail já existir na tabela de clientes, execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_adicionarCliente(p_nome varchar(100), p_email varchar(100), p_telefone varchar(20))
+begin
+START TRANSACTION;
+
+if (p_email in (select email from clientes)) then 
+	set @emailDuplicado = true;
+end if;
+    
+insert into clientes (nome, email, telefone) values (p_nome, p_email, p_telefone);
+
+if (@emailDuplicado = true) then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+call p_adicionarCliente('Laura', 'laura@example.com', '(11) 2222-3333');
+select * from clientes;
+
 
 -- Atualize a cor do veículo com id = 4 para 'Cinza'. Se a cor atual já for 'Cinza', execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_atualizarCor(p_id int)
+begin
+START TRANSACTION;
+
+set @corAtual = (select cor from veiculos where id = p_id);
+update veiculos set cor = 'Cinza' where id = p_id;
+
+if (@corAtual = 'Cinza') then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+call p_atualizarCor(4);
+select * from veiculos;
+
 
 -- Exclua a venda com id = 5. Se a venda estiver associada a um cliente cujo nome é 'Paula', execute um ROLLBACK. Caso contrário, execute um COMMIT.
 
+
 -- Atualize o ano do veículo com id = 7 para 2021. Se o ano atual já for 2021, execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_atualizarAno(p_id int)
+begin
+START TRANSACTION;
+
+set @anoAtual = (select ano from veiculos where id = p_id);
+update veiculos set ano = 2021 where id = p_id;
+
+if (@anoAtual = 2021) then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+call p_atualizarAno(7);
+select * from veiculos;
 
 -- Adicione um novo veículo com modelo = 'Passat', ano = 2021, preço = 95.000,00, cor = 'Azul', e id_marca = 3. Se o modelo já existir, execute um ROLLBACK. Caso contrário, execute um COMMIT.
 
 -- Atualize o telefone do cliente com id = 6 para '(11) 4444-5555'. Se o telefone atual for diferente de '(11) 4444-5555', execute um ROLLBACK. Caso contrário, execute um COMMIT.
+DELIMITER //
+create procedure p_atualizarTelefone(p_id int)
+begin
+START TRANSACTION;
+
+set @telefoneAtual = (select telefone from clientes where id = p_id);
+update clientes set telefone = '(11) 4444-5555' where id = p_id;
+
+if (@telefoneAtual != '(11) 4444-5555') then
+	rollback;
+else
+	commit;
+end if;    
+
+end;
+// DELIMITER ;
+
+call p_atualizarTelefone(6);
+select * from clientes;
 
 -- Exclua o cliente com id = 3. Se o cliente estiver associado a alguma venda, execute um ROLLBACK. Caso contrário, execute um COMMIT.
 
