@@ -251,7 +251,7 @@ create procedure p_adicionarVenda(id_veiculo int, id_cliente int, data_venda dat
 begin
 START TRANSACTION;
 
-if (p_email in (select email from clientes)) then 
+if (id_cliente in (select id_cliente from vendas)) then 
 	set @vendaDuplicada = true;
 end if;
     
